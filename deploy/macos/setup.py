@@ -23,6 +23,8 @@ def main():
     parser.add_argument('--node', required=True, type=Path)
     parser.add_argument('--postgres-bin', required=True, type=Path)
     parser.add_argument('--coreutils-bin', required=True, type=Path)
+    parser.add_argument('--gnu-sed-bin', type=Path,
+                        default=Path('/opt/homebrew/opt/gnu-sed/libexec/gnubin'))
     parser.add_argument('--public-url', required=True)
     parser.add_argument('--email', required=True)
     parser.add_argument('--port', type=int, default=1900)
@@ -34,6 +36,7 @@ def main():
     node = args.node.resolve()
     pg = args.postgres_bin.resolve()
     coreutils = args.coreutils_bin.resolve()
+    gnu_sed = args.gnu_sed_bin.resolve()
     url = urlparse(args.public_url)
     if url.scheme != 'https' or not url.hostname or url.path not in ('', '/'):
         parser.error('--public-url must be an HTTPS origin')
@@ -45,6 +48,8 @@ def main():
         parser.error('build the server first')
     if not (coreutils / 'timeout').exists():
         parser.error('--coreutils-bin must contain GNU timeout')
+    if not (gnu_sed / 'sed').exists():
+        parser.error('--gnu-sed-bin must contain GNU sed')
     for directory in ('run', 'logs', 'backups', 'data', 'releases'):
         (state / directory).mkdir(parents=True, exist_ok=True, mode=0o700)
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
@@ -120,7 +125,7 @@ def main():
         'email': args.email, 'smtp_configured': False,
     }, indent=2) + '\n')
     env = dict(os.environ, **values)
-    env['PATH'] = str(node.parent) + ':' + str(pg) + ':' + str(coreutils) + ':' + env['PATH']
+    env['PATH'] = ':'.join(map(str, (node.parent, pg, coreutils, gnu_sed))) + ':' + env['PATH']
     with (state / 'logs/migrations.log').open('w') as log:
         run(['sh', 'scripts/migrate-deploy.sh'], cwd=package, env=env,
             stdout=log, stderr=subprocess.STDOUT)

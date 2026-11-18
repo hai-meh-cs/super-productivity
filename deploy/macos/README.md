@@ -5,7 +5,7 @@ server on Apple Silicon, with an isolated PostgreSQL 17 cluster and launch agent
 It does not require Docker. It does not change task storage, sync or authentication.
 
 Requirements: arm64 Node 24.15 or newer in the 24.x line, PostgreSQL 17 binaries,
-GNU coreutils (`timeout` for the upstream migration runner), a logged-in macOS
+GNU coreutils and GNU sed (for the upstream migration runner), a logged-in macOS
 account, and an HTTPS reverse proxy that supports WebSockets. Configure SMTP for
 real sign-in and account recovery; production test mode stays off.
 
@@ -20,6 +20,7 @@ python3 deploy/macos/setup.py \
   --node /absolute/path/to/node \
   --postgres-bin /opt/homebrew/opt/postgresql@17/bin \
   --coreutils-bin /opt/homebrew/opt/coreutils/libexec/gnubin \
+  --gnu-sed-bin /opt/homebrew/opt/gnu-sed/libexec/gnubin \
   --public-url https://your-mini.your-tailnet.ts.net:8443 \
   --email your-own-address@example.com
 ```
