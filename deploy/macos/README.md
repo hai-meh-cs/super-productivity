@@ -48,7 +48,12 @@ pages, their `Referrer-Policy: no-referrer` header and authenticated sync after 
 `server.env` is private (0600). Add the chosen provider's `SMTP_HOST`, `SMTP_PORT`,
 `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` and `SMTP_FROM` through a local secret entry
 flow. Do not put credentials into shell arguments, commit them or paste them into
-chat. Restart only `com.koji.supersync` after changing its environment.
+chat. The local helper verifies SMTP credentials before saving them and restarts
+only `com.koji.supersync`:
+
+```sh
+python3 deploy/macos/configure_smtp.py /absolute/path/to/state
+```
 
 Sign up with the allowlisted address. In the Super Productivity client, select
 SuperSync, open its advanced configuration, set this server URL, then connect via
