@@ -72,6 +72,7 @@ def main():
         doc = {'Label': label, 'ProgramArguments': [str(a) for a in argv],
                'StandardOutPath': str(state / 'logs' / (label + '.log')),
                'StandardErrorPath': str(state / 'logs' / (label + '.error.log')),
+               'EnvironmentVariables': {'LC_ALL': 'C'},
                'Umask': 0o077, 'ProcessType': 'Background'}
         if cwd:
             doc['WorkingDirectory'] = str(cwd)
